@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>A股人生 · 小游戏渲染层（本地预览）</title>
+    <style>
+      html,
+      body {
+        margin: 0;
+        height: 100%;
+        background: #06090d;
+        overflow: hidden;
+      }
+      /* 画布铺满视口：表现层按真实 CSS 像素排，不缩放、不变形 */
+      #game {
+        display: block;
+        width: 100vw;
+        height: 100vh;
+        touch-action: manipulation;
+      }
+    </style>
+  </head>
+  <body>
+    <canvas id="game"></canvas>
+    <script type="module">
+      import { mountH5 } from '/src/game/runtime/h5.ts'
+
+      const handle = mountH5(document.getElementById('game'))
+      const game = handle.game
+
+      /*
+       * 截图 / 复现用的调试参数（只在本文件的本地预览里生效，不进 src、不进小游戏产物）：
+       *   ?seed=4242        固定一局
+       *   &start=0          点第几张出身卡（不给就不点）
+       *   &step=2           连点几次「过一季」
+       *   &auto=1           一路打到结局（刷年份 / 选第一个选项）
+       *   &skip=1           结局仪式直接跳过
+       *   &poster=1         跳过仪式 + 点「生成战报」（H5 会以 <img> 铺满页面）
+       *   &keep=1           有存档时不去点「重新开始」（拍续玩层用）
+       *   &reveal=probe     把某条命中区域滚到 at 这个高度（默认 180）
+       *   &at=180
+       *   &log=120          日志内层再滚这么多像素
+       *   &gate=watch       展开某扇门
+       *   &max=1            滚到最底部
+       */
+      const q = new URLSearchParams(location.search)
+      const num = (k, d) => {
+        const v = Number(q.get(k))
+        return q.has(k) && isFinite(v) ? v : d
+      }
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms))
+
+      function region(id) {
+        return game.regions().find((r) => r.id === id) || null
+      }
+      function tapId(id) {
+        for (let i = 0; i < 30; i++) {
+          game.render()
+          const r = region(id)
+          if (!r) return false
+          if (r.enabled) {
+            game.tap(r.rect.x + r.rect.w / 2, r.rect.y + r.rect.h / 2)
+            game.render()
+            return true
+          }
+          game.scrollPage(game.scrolled + r.rect.y - 120)
+        }
+        return false
+      }
+
+      async function main() {
+        game.render()
+        // 上一次留下的存档会先弹续玩层：除拍续玩层之外都先「重新开始」
+        if (game.view === 'resume' && !q.has('keep')) tapId('resume:new')
+        if (q.has('start')) tapId('org:' + num('start', 0))
+        for (let i = 0; i < num('step', 0); i++) tapId('step')
+
+        if (q.has('auto')) {
+          for (let i = 0; i < 500; i++) {
+            if (game.view === 'over') break
+            if (game.view === 'resume') {
+              tapId('resume:new')
+              continue
+            }
+            if (game.view === 'org') {
+              tapId('org:' + num('start', 0))
+              continue
+            }
+            if (game.view === 'event') {
+              if (!tapId('ev:0')) break
+              continue
+            }
+            if (!tapId('year')) break
+          }
+        }
+
+        // 点主按钮会把页面滚到底：截图前先回到顶部（reveal 会自己再滚到指定位置）
+        game.scrollPage(0)
+        game.render()
+        if (q.has('gate')) tapId('gate:' + q.get('gate'))
+        if (q.has('reveal')) {
+          game.render()
+          const r = region(q.get('reveal'))
+          if (r) {
+            game.scrollPage(game.scrolled + r.rect.y - num('at', 180))
+            game.render()
+          }
+        }
+        if (q.has('log')) {
+          game.scrollLog(num('log', 0))
+          game.render()
+        }
+        if (q.has('max')) {
+          game.scrollPage(1e9)
+          game.render()
+        }
+        // &ap=0：把行动点清零（验「点门有话说」）；&tapid=ap 点一下那层提示区
+        if (q.has('ap') && game.game) {
+          game.game.s.ap = num('ap', 0)
+          game.render()
+        }
+        if (q.has('tapid')) tapId(q.get('tapid'))
+        // &hold=1：隔一会儿重放一次那一手（轻提示只有 2.6 秒，截图靠它留在屏幕上）
+        if (q.has('hold') && q.has('tapid')) {
+          setInterval(function () {
+            tapId(q.get('tapid'))
+          }, 400)
+        }
+        if (q.has('skip') || q.has('poster')) {
+          for (let i = 0; i < 40 && !game.ritualDone; i++) {
+            game.frame(0.05)
+            game.render()
+          }
+          tapId('skip')
+        }
+        if (q.has('poster')) {
+          await wait(60)
+          tapId('poster')
+          await wait(400)
+        }
+        report('')
+      }
+
+      // 截图脚本可读：当前状态一句话
+      function report(extra) {
+        document.title =
+          'screen=' + game.view + '|scroll=' + Math.round(game.scrolled) + '|log=' + game.logScrolled +
+          '|w=' + window.innerWidth + '|dpr=' + window.devicePixelRatio + (extra || '')
+      }
+
+      main()
+
+      /*
+       * &smoke=1：在真浏览器里给 canvas 派发 pointerdown/move/up，
+       * 走的是 runtime/h5.ts 真实的监听器 —— 用来验证「拖动能滚、松手有惯性」这条链路，
+       * 单测只能验状态机，验不到 DOM 绑定。
+       */
+      if (q.has('smoke')) {
+        const cv = document.getElementById('game')
+        game.scrollPage(0)
+        game.render()
+        const before = game.scrolled
+        const cx = window.innerWidth / 2
+        const y0 = window.innerHeight * 0.72
+        const y1 = y0 - 140
+        const ev = (type, cy, buttons) =>
+          cv.dispatchEvent(
+            new PointerEvent(type, {
+              clientX: cx,
+              clientY: cy,
+              pointerId: 1,
+              pointerType: 'touch',
+              buttons: buttons,
+              bubbles: true,
+              cancelable: true,
+            }),
+          )
+        let fcount = 0
+        const counter = () => {
+          fcount++
+          requestAnimationFrame(counter)
+        }
+        requestAnimationFrame(counter)
+        const tick = () => new Promise((r) => setTimeout(r, 20))
+        ;(async function () {
+          try {
+            ev('pointerdown', y0, 1)
+            for (let i = 1; i <= 6; i++) {
+              await tick()
+              ev('pointermove', y0 + ((y1 - y0) * i) / 6, 1)
+            }
+            await tick()
+            ev('pointerup', y1, 0)
+            const dragged = game.scrolled
+            const v = Math.round(game.vPage)
+            await tick()
+            await tick()
+            report(
+              '|smoke=' + Math.round(before) + '>' + Math.round(dragged) + '>' + Math.round(game.scrolled) +
+                '|v=' + v + '|frames=' + fcount,
+            )
+          } catch (e) {
+            report('|smokeErr=' + ((e && e.message) || e))
+          }
+        })()
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,58 @@
+# push 到 main -> 构建 H5 -> 发布 dist/build/h5 到 GitHub Pages
+# 仓库根目录必须是 agu-life 项目根（package.json 所在目录）。
+# 前置：仓库 Settings -> Pages -> Build and deployment -> Source 选 "GitHub Actions"。
+name: Deploy H5 to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Pages 官方发布方式要求的三条权限；id-token 用于 deploy-pages 的 OIDC 校验。
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# 同一条流水线只跑一个，新 push 顶掉排队中的旧任务（不打断正在发布的那次）。
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      - name: Test
+        run: npm test
+
+      - name: Build H5
+        run: npm run build:h5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist/build/h5
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,12 @@
+{
+  "appid": "wx40e368815564c258",
+  "projectname": "agu-life-minigame",
+  "compileType": "game",
+  "setting": {
+    "es6": true,
+    "minified": true,
+    "urlCheck": false,
+    "postcss": false,
+    "minifyWXML": true
+  }
+}

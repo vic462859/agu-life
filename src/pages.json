@@ -1,0 +1,23 @@
+{
+  "pages": [
+    {
+      "path": "pages/index/index",
+      "style": {
+        "navigationStyle": "custom",
+        "navigationBarTitleText": "A股人生"
+      }
+    },
+    {
+      "path": "pages/chart-lab/chart-lab",
+      "style": {
+        "navigationBarTitleText": "图表试验台"
+      }
+    }
+  ],
+  "globalStyle": {
+    "navigationBarTextStyle": "white",
+    "navigationBarTitleText": "A股人生",
+    "navigationBarBackgroundColor": "#0b1015",
+    "backgroundColor": "#0b1015"
+  }
+}

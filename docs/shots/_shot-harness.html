@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>shot-harness</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #06090d; }
+  iframe { border: 0; display: block; }
+  #out { position: absolute; left: -99999px; top: 0; }
+</style>
+</head>
+<body>
+<iframe id="f" width="375" height="800"></iframe>
+<pre id="out"></pre>
+<script>
+/* 只用于截图/自测的开发工具，不进 src。
+   用法：_shots.html?s=org|trade|var|event|late|end|ending|poster|resume&w=375
+   s=var = 「带天赋 + 两条警报」的最坏状态：自己造一份 fam=18 / health=35 的存档、reload、点「继续」，
+   标题会写成 S=trade-var|AL=<警报条数>|T=<1=带天赋>，任何一步没走通都报 S=var-FAIL|WHY=…，绝不静默退回整局。 */
+(function () {
+  var params = new URLSearchParams(location.search);
+  var target = params.get('s') || 'org';
+  var width = parseInt(params.get('w') || '375', 10);
+  var ifr = document.getElementById('f');
+  var out = document.getElementById('out');
+  ifr.style.width = width + 'px';
+  ifr.style.height = '100vh';
+  try { localStorage.clear(); } catch (e) {}
+  ifr.src = '/index.html';
+
+  function doc() { try { return ifr.contentDocument; } catch (e) { return null; } }
+  function q(sel) { var d = doc(); return d ? d.querySelector(sel) : null; }
+  function click(sel) { var el = q(sel); if (!el) return false; el.click(); return true; }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  async function until(sel, max) {
+    for (var i = 0; i < (max || 120); i++) { if (q(sel)) return true; await wait(60); }
+    return false;
+  }
+  function report(label) {
+    var d = doc();
+    var h = d ? Math.max(d.body.scrollHeight, d.documentElement.scrollHeight) : 0;
+    var sw = d ? d.documentElement.scrollWidth : 0;
+    var cw = d ? d.documentElement.clientWidth : 0;
+    document.title = 'H=' + h + '|W=' + sw + '/' + cw + '|S=' + label;
+  }
+  async function playToEnd() {
+    for (var k = 0; k < 6000; k++) {
+      if (k % 40 === 0) document.title = 'P=loop' + k;
+      if (q('#opt-0')) { click('#opt-0'); await wait(15); continue; }
+      if (q('#end-card')) break;
+      if (q('#go-year')) { click('#go-year'); await wait(15); continue; }
+      if (q('#go-late')) { click('#go-late'); await wait(15); continue; }
+      await wait(60);
+    }
+  }
+  async function main() {
+    await until('#org-0', 160);
+    if (target === 'org') { report('org'); return; }
+
+    if (target === 'resume') {
+      if (q('#resume-new')) { click('#resume-new'); await wait(150); }
+      click('#org-0'); await wait(200);
+      if (q('#talent-none')) { click('#talent-none'); await wait(250); }
+      click('#mode-real'); await wait(250);
+      for (var r0 = 0; r0 < 3; r0++) { if (q('#opt-0')) { click('#opt-0'); await wait(120); continue; } click('#go-quarter'); await wait(150); }
+      await wait(400);
+      ifr.src = '/index.html?reload=' + Date.now();
+      await until('#resume', 200);
+      await wait(300);
+      report('resume'); return;
+    }
+
+    document.title = 'P=org';
+    if (q('#resume-new')) { click('#resume-new'); await wait(150); }
+    click('#org-0'); await wait(200);
+    if (q('#talent-none')) { click('#talent-none'); await wait(250); }
+    document.title = 'P=mode';
+    click('#mode-real'); await wait(220);
+    document.title = 'P=trade';
+
+    if (target === 'trade' || target === 'event' || target === 'var') {
+      var n = target === 'event' ? 160 : 9;
+      for (var i = 0; i < n; i++) {
+        if (q('#opt-0')) {
+          if (target === 'event') break;
+          click('#opt-0'); await wait(120); continue;
+        }
+        click('#go-quarter'); await wait(target === 'event' ? 80 : 120);
+      }
+      for (var m = 0; m < 6 && q('#opt-0'); m++) { click('#opt-0'); await wait(150); }
+      await wait(400);
+      if (target !== 'var') { report(target); return; }
+
+      /* --- s=var：带天赋 + 两条警报的最坏状态 ---
+         上面这局刚打出来的存档就在 localStorage 里，把 fam 压到 18、health 压到 35（两条警报的阈值），
+         再写一份带天赋的 meta（老手感），reload 后点「继续」回到交易页。只碰 localStorage，不碰任何规则。 */
+      var w0 = null;
+      try { w0 = ifr.contentWindow; } catch (e) { w0 = null; }
+      var raw = w0 ? w0.localStorage.getItem('agu_life_save_v1') : null;
+      if (!raw) { document.title = 'S=var-FAIL|WHY=no-save'; return; }
+      var env = null;
+      try { env = JSON.parse(raw); } catch (e) { env = null; }
+      if (!env || !env.s) { document.title = 'S=var-FAIL|WHY=bad-save'; return; }
+      env.s.fam = 18;
+      env.s.health = 35;
+      env.pending = null;
+      w0.localStorage.setItem('agu_life_save_v1', JSON.stringify(env));
+      w0.localStorage.setItem('agu_meta_v1', JSON.stringify({ v: 1, points: 3, unlocked: ['sense'], lastSettled: null, currentTalent: 'sense' }));
+      ifr.contentWindow.location.reload();
+      if (!(await until('#resume', 200))) { document.title = 'S=var-FAIL|WHY=no-resume-sheet'; return; }
+      if (!click('#resume')) { document.title = 'S=var-FAIL|WHY=no-resume'; return; }
+      await wait(700);
+      for (var v1 = 0; v1 < 6 && q('#opt-0'); v1++) { click('#opt-0'); await wait(150); }
+      if (!q('.ag-trade')) { document.title = 'S=var-FAIL|WHY=not-trade'; return; }
+      var al = doc().querySelectorAll('.ag-alarm-line-t').length;
+      var tl = q('#challenge-chip-talent');
+      report('trade-var|AL=' + al + '|T=' + (tl ? '1' : '0'));
+      return;
+    }
+
+    if (target === 'late') {
+      for (var k2 = 0; k2 < 6000; k2++) {
+        if (q('#opt-0')) { click('#opt-0'); await wait(15); continue; }
+        if (q('#go-late')) break;
+        if (q('#end-card')) break;
+        if (q('#go-year')) { click('#go-year'); await wait(15); continue; }
+        await wait(60);
+      }
+      await wait(900);
+      report('late'); return;
+    }
+
+    await playToEnd();
+    await wait(target === 'end' ? 300 : target === 'reveal' || target === 'save' || target === 'poster' ? 0 : 2600);
+
+    if (target === 'reveal') {
+      /* 仪式感自证：入场后按时间点数「已入场」的层数，应当逐层变多 */
+      var counts = [];
+      var samples = [0, 120, 120, 200, 300, 900];
+      for (var r1 = 0; r1 < samples.length; r1++) {
+        await wait(samples[r1]);
+        var ins = doc().querySelectorAll('.ag-rise--in');
+        counts.push(ins ? ins.length : 0);
+      }
+      out.textContent = 'R=' + counts.join(',');
+      document.title = 'R=' + counts.join(',') + '|S=reveal';
+      return;
+    }
+
+    if (target === 'save') {
+      click('#gen-poster');
+      await wait(1500);
+      var btns = doc().querySelectorAll('.ag-sheet-body .ag-btn');
+      if (btns && btns.length) btns[0].click();
+      await wait(700);
+      var tip = q('.ag-poster-tip');
+      out.textContent = 'SAVE=' + (tip ? tip.textContent : 'no-tip');
+      document.title = 'SAVE=' + (tip ? tip.textContent : 'no-tip') + '|S=save';
+      return;
+    }
+
+    if (target === 'poster') {
+      click('#gen-poster');
+      await wait(1600);
+      var c = q('#m2-poster canvas') || q('canvas[canvas-id="m2-poster"]') || q('#m2-poster');
+      if (c && typeof c.toDataURL === 'function') {
+        out.textContent = c.toDataURL('image/png');
+        document.title = 'H=0|W=0/0|S=poster|CV=' + c.width + 'x' + c.height;
+        return;
+      }
+      document.title = 'H=0|W=0/0|S=poster|CV=none';
+      return;
+    }
+    report(target === 'end' ? 'end' : 'ending');
+  }
+  main();
+})();
+</script>
+</body>
+</html>

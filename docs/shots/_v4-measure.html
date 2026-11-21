@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>v4-measure</title>
+<style>html,body{margin:0;padding:0;background:#06090d}iframe{border:0;display:block}#out{position:absolute;left:-99999px;top:0}</style>
+</head>
+<body>
+<iframe id="f" width="375" height="800"></iframe>
+<pre id="out"></pre>
+<script>
+/* V4「一屏决策」测量台：只量高度、只点折叠，不改任何游戏行为，不进 src。
+   用法：/ _v4-measure.html?s=trade|fold&w=390&expand=0|1 */
+(function () {
+  var params = new URLSearchParams(location.search);
+  var target = params.get('s') || 'trade';
+  var width = parseInt(params.get('w') || '390', 10);
+  var expand = params.get('expand') === '1';
+  var ifr = document.getElementById('f');
+  var out = document.getElementById('out');
+  ifr.style.width = width + 'px';
+  ifr.style.height = '100vh';
+  try { localStorage.clear(); } catch (e) {}
+  ifr.src = '/index.html';
+  function doc() { try { return ifr.contentDocument; } catch (e) { return null; } }
+  function win() { try { return ifr.contentWindow; } catch (e) { return null; } }
+  function q(sel) { var d = doc(); return d ? d.querySelector(sel) : null; }
+  function click(sel) { var el = q(sel); if (!el) return false; el.click(); return true; }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+  async function until(sel, max) { for (var i = 0; i < (max || 160); i++) { if (q(sel)) return true; await wait(60); } return false; }
+  function h(el) { return el ? Math.round(el.getBoundingClientRect().height) : 0; }
+  function ls() { var w = win(); try { return w ? w.localStorage.getItem('agu_fold_v1') : 'no-window'; } catch (e) { return 'err'; } }
+  function txt(sel) { var el = q(sel); return el ? (el.textContent || '').replace(/\s+/g, ' ').slice(0, 40) : ''; }
+
+  async function play() {
+    await until('#org-0', 160);
+    if (q('#resume-new')) { click('#resume-new'); await wait(150); }
+    click('#org-0'); await wait(200);
+    if (q('#talent-none')) { click('#talent-none'); await wait(250); }
+    if (!q('#mode-real')) return false;
+    click('#mode-real'); await wait(280);
+    for (var i = 0; i < 9; i++) {
+      if (q('#opt-0')) { click('#opt-0'); await wait(120); continue; }
+      click('#go-quarter'); await wait(120);
+    }
+    for (var m = 0; m < 6 && q('#opt-0'); m++) { click('#opt-0'); await wait(150); }
+    await wait(500);
+    return true;
+  }
+
+  function dump(extra) {
+    var d = doc();
+    var H = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+    var blocks = [];
+    var shell = q('.ag-shell');
+    var kids = Array.prototype.slice.call(shell.children);
+    for (var k = 0; k < kids.length; k++) {
+      var n = kids[k];
+      var cls = (n.className || '').toString().replace(/\s+/g, '.').slice(0, 40);
+      blocks.push(k + ':' + cls + ':' + h(n));
+    }
+    var panels = Array.prototype.slice.call(d.querySelectorAll('.ag-panel')).map(function (n) {
+      var hd = n.querySelector('.ag-kick') || n.querySelector('.ag-c-fold-k') || n.querySelector('.ag-lfold-k') || n.querySelector('.ag-ifold-k');
+      var kick = hd ? (hd.textContent || '').replace(/\s+/g, '') : '';
+      return kick + ':' + h(n);
+    });
+    var cards = Array.prototype.slice.call(d.querySelectorAll('.ag-scard')).map(function (c) { return h(c); });
+    var dock = q('.ag-dock');
+    var res = {
+      s: target, w: width, expand: expand,
+      innerW: d.documentElement.clientWidth,
+      H: H,
+      dock: dock ? dock.offsetHeight : 0,
+      cards: cards,
+      panels: panels,
+      blocks: blocks
+    };
+    if (extra) for (var kk in extra) res[kk] = extra[kk];
+    out.textContent = 'JSON:' + JSON.stringify(res);
+    document.title = 'H=' + H + '|W=' + d.documentElement.scrollWidth + '/' + d.documentElement.clientWidth + '|S=' + target + '|X=' + (expand ? 1 : 0);
+  }
+
+  async function main() {
+    if (target === 'late') {
+      if (!(await play())) { out.textContent = 'JSON:{"error":"no trade"}'; document.title = 'ERR=flow'; return; }
+      for (var k = 0; k < 4000; k++) {
+        if (q('#opt-0')) { click('#opt-0'); await wait(10); continue; }
+        if (q('#go-late')) break;
+        if (q('#end-card')) break;
+        if (q('#go-year')) { click('#go-year'); await wait(10); continue; }
+        if (q('#go-quarter')) { click('#go-quarter'); await wait(10); continue; }
+        await wait(40);
+      }
+      await wait(800);
+      dump({ late: !!q('#go-late') });
+      return;
+    }
+    if (!(await play())) { out.textContent = 'JSON:{"error":"no trade"}'; document.title = 'ERR=flow'; return; }
+
+    if (target === 'var') {
+      // 「带天赋 + 警报行」状态变体：拿一局真存档，把 fam 压到 18、health 压到 35（触发两条警报），
+      // 再写一份带天赋的 meta（老手感），relaod 后从存档续玩 —— 只碰 localStorage，不碰任何规则。
+      var w0 = win();
+      var env = JSON.parse(w0.localStorage.getItem('agu_life_save_v1'));
+      env.s.fam = 18;
+      env.s.health = 35;
+      w0.localStorage.setItem('agu_life_save_v1', JSON.stringify(env));
+      w0.localStorage.setItem('agu_meta_v1', JSON.stringify({ v: 1, points: 3, unlocked: ['sense'], lastSettled: null, currentTalent: 'sense' }));
+      ifr.contentWindow.location.reload();
+      await until('#resume', 160);
+      click('#resume'); await wait(800);
+      var alarmEl = q('.ag-alarm-line');
+      var talentEl = q('#challenge-chip-talent');
+      dump({ variant: 'talent+alarm', alarms: alarmEl ? alarmEl.textContent.replace(/\s+/g, ' ').trim() : '(none)', talent: talentEl ? talentEl.textContent.trim() : '(none)' });
+      return;
+    }
+
+    if (target === 'fold') {
+      var before = ls();
+      var x0 = txt('.ag-ifold-x');
+      click('#intel-fold'); await wait(300);
+      var afterClick = ls();
+      var x1 = txt('.ag-ifold-x');
+      // 刷新（iframe 重载）后应当还是「展开」
+      ifr.contentWindow.location.reload();
+      await until('#resume', 160);
+      click('#resume'); await wait(500);
+      await wait(300);
+      var x2 = txt('.ag-ifold-x');
+      var H2 = Math.max(doc().body.scrollHeight, doc().documentElement.scrollHeight);
+      out.textContent = 'JSON:' + JSON.stringify({
+        s: 'fold', before: before, x0: x0, afterClick: afterClick, x1: x1,
+        x2: x2, H2: H2, cards: Array.prototype.slice.call(doc().querySelectorAll('.ag-scard')).map(h)
+      });
+      document.title = 'FOLD=' + (x1 === '▾' ? 'on' : 'off') + '|AFTER=' + (x2 === '▾' ? 'on' : 'off');
+      return;
+    }
+
+    if (expand) {
+      click('#intel-fold'); await wait(220);
+      click('#trail-fold'); await wait(220);
+      click('#log-fold'); await wait(320);
+      await wait(300);
+    }
+    dump();
+  }
+  main();
+})();
+</script>
+</body></html>

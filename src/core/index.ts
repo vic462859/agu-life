@@ -1,0 +1,12 @@
+/** 内核唯一出口。UI 只从这里 import，不直接摸 data / engine 内部。 */
+export * from './types'
+export { createRng, mulberry32 } from './rng'
+export { createGame, createPlayerState, setSector, setPosition, toggle } from './engine/state'
+export { step, stepYear } from './engine/step'
+export { chooseEvent, chooseYear, chooseLate, lateStep, applyA } from './engine/events'
+export { runAct, openAct, probeIntel, SUBS } from './engine/actions'
+export { GROUPS, AP_PER_YEAR, AP_EXHAUSTED_TEXT } from './data/actions'
+export { ORG } from './data/org'
+export { buildQuarters, buildMap, buildKty, mkIntel } from './engine/market'
+export { serialize, deserialize, SAVE_VERSION, SAVE_KEY } from './save'
+export * from './selectors'

@@ -1,0 +1,117 @@
+/* 年代质感：五段年份主题（主色 / 辅色 / 纹理 / 标题量级）。
+   零外部图片，纹理全部是 CSS 渐变。交易主界面不挂这些 class，保持数据冷感。 */
+.ag-era-80s {
+  --era-a: #d9a441;
+  --era-b: #6d4d19;
+  --era-title-size: 38rpx;
+  --era-caps: 5rpx;
+}
+.ag-era-90s {
+  --era-a: #f0715c;
+  --era-b: #7d2f28;
+  --era-title-size: 40rpx;
+  --era-caps: 3rpx;
+}
+.ag-era-00s {
+  --era-a: #6aa7d8;
+  --era-b: #24476b;
+  --era-title-size: 36rpx;
+  --era-caps: 2rpx;
+}
+.ag-era-10s {
+  --era-a: #3ee0cb;
+  --era-b: #175f59;
+  --era-title-size: 38rpx;
+  --era-caps: 4rpx;
+}
+.ag-era-20s {
+  --era-a: #c8a6ff;
+  --era-b: #4a2f7a;
+  --era-title-size: 42rpx;
+  --era-caps: 6rpx;
+}
+
+/* 每段的纹理：纯渐变叠出来的底纹 */
+.ag-era-tex {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.9;
+}
+.ag-era-80s .ag-era-tex {
+  /* 80 年代：方格稿纸 + 暖色顶光 */
+  background-image:
+    radial-gradient(90% 40% at 50% 0%, rgba(217, 164, 65, 0.14), rgba(0, 0, 0, 0) 62%),
+    repeating-linear-gradient(0deg, rgba(217, 164, 65, 0.07) 0, rgba(217, 164, 65, 0.07) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 9rpx);
+}
+.ag-era-90s .ag-era-tex {
+  /* 90 年代：网点 + 斜纹（报纸感） */
+  background-image:
+    radial-gradient(80% 46% at 100% 0%, rgba(240, 113, 92, 0.16), rgba(0, 0, 0, 0) 60%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.035) 0, rgba(255, 255, 255, 0.035) 2rpx, rgba(0, 0, 0, 0) 2rpx, rgba(0, 0, 0, 0) 10rpx);
+}
+.ag-era-00s .ag-era-tex {
+  /* 00 年代：钢蓝细斜纹 */
+  background-image:
+    radial-gradient(80% 50% at 0% 0%, rgba(106, 167, 216, 0.16), rgba(0, 0, 0, 0) 62%),
+    repeating-linear-gradient(135deg, rgba(106, 167, 216, 0.08) 0, rgba(106, 167, 216, 0.08) 2rpx, rgba(0, 0, 0, 0) 2rpx, rgba(0, 0, 0, 0) 12rpx);
+}
+.ag-era-10s .ag-era-tex {
+  /* 10 年代：屏幕网格 */
+  background-image:
+    radial-gradient(80% 50% at 50% 100%, rgba(62, 224, 203, 0.12), rgba(0, 0, 0, 0) 62%),
+    repeating-linear-gradient(0deg, rgba(62, 224, 203, 0.06) 0, rgba(62, 224, 203, 0.06) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 12rpx),
+    repeating-linear-gradient(90deg, rgba(62, 224, 203, 0.06) 0, rgba(62, 224, 203, 0.06) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 12rpx);
+}
+.ag-era-20s .ag-era-tex {
+  /* 20 年代：紫金雾光 + 细点 */
+  background-image:
+    radial-gradient(70% 50% at 85% 0%, rgba(200, 166, 255, 0.16), rgba(0, 0, 0, 0) 62%),
+    radial-gradient(60% 40% at 0% 100%, rgba(246, 207, 114, 0.12), rgba(0, 0, 0, 0) 60%),
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.03) 0, rgba(255, 255, 255, 0.03) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 14rpx);
+}
+
+/* 挂了年代的容器：标题色与字距跟着变 */
+.ag-era-body {
+  position: relative;
+}
+.ag-era-head {
+  position: relative;
+  z-index: 1;
+  color: var(--era-a, var(--ink-0));
+  font-size: var(--era-title-size, 36rpx);
+  font-weight: 800;
+  letter-spacing: var(--era-caps, 3rpx);
+}
+.ag-era-kick {
+  position: relative;
+  z-index: 1;
+  color: var(--era-a, var(--ink-2));
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  letter-spacing: 3rpx;
+  opacity: 0.85;
+}
+.ag-era-rule {
+  position: relative;
+  z-index: 1;
+  height: 2rpx;
+  margin: 14rpx 0;
+  background-image: linear-gradient(90deg, var(--era-a, var(--line-1)), rgba(0, 0, 0, 0));
+  opacity: 0.55;
+}
+.ag-era-chip {
+  position: relative;
+  z-index: 1;
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--era-a, var(--ink-2));
+  border: 1px solid var(--era-b, var(--line-1));
+  border-radius: 6rpx;
+  padding: 4rpx 12rpx;
+  letter-spacing: 2rpx;
+}

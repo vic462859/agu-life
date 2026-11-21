@@ -1,0 +1,86 @@
+/* 设计令牌（唯一的颜色出处）。.scss → .css：本工程未安装 sass，新增依赖被禁止。 */
+page,
+:root {
+  /* 背景层次：0 最底，2 最亮的面板 */
+  --bg-0: #06090d;
+  --bg-1: #0a0f16;
+  --bg-2: #0f1620;
+  --bg-3: #141d29;
+
+  /* 文字 */
+  --ink-0: #eaf1f8;
+  /* 金色底上的深色字（按钮/选中段的文字色） */
+  --ink-inverse: #16110a;
+  --ink-1: #9fadbe;
+  --ink-2: #6b798b;
+
+  /* 语义色 */
+  --gold-0: #f6cf72;
+  --gold-1: #d8a441;
+  --gold-2: #7a5a1e;
+  --teal-0: #3ee0cb;
+  --teal-1: #1f9e91;
+  --red-0: #ff6a6a;
+  --red-1: #b4342f;
+  --warn-0: #f0a63c;
+  --ok-0: #4fd6a8;
+
+  /* 描边与阴影 */
+  --line-0: rgba(255, 255, 255, 0.06);
+  --line-1: rgba(255, 255, 255, 0.11);
+  --line-2: rgba(246, 207, 114, 0.34);
+  --panel-top: rgba(255, 255, 255, 0.05);
+  --shadow-1: 0 8rpx 28rpx rgba(0, 0, 0, 0.44);
+  --shadow-2: 0 18rpx 48rpx rgba(0, 0, 0, 0.55);
+  --glow-gold: 0 0 24rpx rgba(246, 207, 114, 0.28);
+
+  /* 字体：等宽数字走系统等宽，不加载任何外部字体 */
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang SC", "Helvetica Neue", "Microsoft YaHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, "Courier New", monospace;
+
+  /* 家 / 身体进度条的档位分界：与 core 的 barTone 同源（<30 bad / <55 warn / 其他 ok），
+     core 改阈值时这里同步改这两行即可，组件里不再出现数字。 */
+  --bar-thr-1: 30%;
+  --bar-thr-2: 55%;
+
+  /* 动效（唯一出处）：时长单位 ms，缓动只有两条。
+     按下 ≤120ms、弹层入场 180ms、出场 140ms、数字补间 ≤460ms。
+     组件里一律写 var(--dur-*) / var(--ease-*)，不许出现裸数字。
+     JS 侧的镜像在 composables/motion.ts（数字补间拿不到 CSS 变量，只能读值），
+     两边由 tests/h5-motion.test.ts 对着守，改这里就要同步改那里。 */
+  --dur-press: 120ms;
+  --dur-modal-in: 180ms;
+  --dur-modal-out: 140ms;
+  --dur-count: 460ms;
+  --dur-rise: 280ms;
+  /* 一次性轻提示的存活时长（不是过渡时长，但同样是硬编码的裸数字） */
+  --dur-toast: 1600ms;
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-press: cubic-bezier(0.2, 0.8, 0.2, 1);
+  /* 按下态的量：缩放 + 提亮 + 描边三件套，不只靠颜色 */
+  --press-scale: 0.97;
+  --press-bright: 1.09;
+
+  /* 圆角与层级 */
+  --r-sm: 8rpx;
+  --r-md: 14rpx;
+  --r-lg: 22rpx;
+  --z-bg: 0;
+  --z-body: 1;
+  --z-dock: 30;
+  --z-mask: 90;
+}
+
+/* 尊重系统设置：命中 reduce 就把所有时长归零 —— 位移/缩放变成瞬时，状态与功能一点不变
+   （音效不在此列，它不在 CSS 里）。base.css 里还有一层兜底，防止漏网的内联裸时长。 */
+@media (prefers-reduced-motion: reduce) {
+  page,
+  :root {
+    --dur-press: 0ms;
+    --dur-modal-in: 0ms;
+    --dur-modal-out: 0ms;
+    --dur-count: 0ms;
+    --dur-rise: 0ms;
+    /* 提示是靠动画自己淡出的，时长归零会让它一出现就不可见 —— 归零时改由 base.css 让它常亮 */
+  }
+}

@@ -1,0 +1,1118 @@
+/* 面板与控件：全部颜色引用 var(--*)；布局数字直接写 rpx（小程序端对 rpx 变量支持不稳）。 */
+
+/* ---------- 面板 ---------- */
+.ag-panel {
+  position: relative;
+  margin-bottom: 20rpx;
+  padding: 26rpx 24rpx;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-lg);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.045) 0%, rgba(255, 255, 255, 0.012) 100%);
+  background-color: var(--bg-1);
+  box-shadow: var(--shadow-1), inset 0 1px 0 var(--panel-top);
+}
+.ag-panel--flat {
+  background-image: none;
+  background-color: rgba(0, 0, 0, 0.26);
+  box-shadow: none;
+}
+.ag-panel-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 18rpx;
+}
+.ag-panel-hd-r {
+  display: flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* ---------- 顶部资产区 ---------- */
+.ag-asset-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.ag-asset-num {
+  display: flex;
+  align-items: baseline;
+  margin: 10rpx 0 6rpx;
+  line-height: 1.06;
+}
+.ag-cur {
+  font-family: var(--font-mono);
+  font-size: 38rpx;
+  color: var(--gold-0);
+  margin-right: 8rpx;
+  opacity: 0.9;
+}
+.ag-big {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  font-size: 76rpx;
+  font-weight: 700;
+  letter-spacing: -1rpx;
+  color: var(--ink-0);
+  text-shadow: 0 0 28rpx rgba(246, 207, 114, 0.16);
+}
+.ag-asset-sub {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 4rpx;
+}
+.ag-delta {
+  font-family: var(--font-mono);
+  font-size: 26rpx;
+  font-weight: 600;
+}
+.ag-delta--u { color: var(--red-0); }
+.ag-delta--d { color: var(--teal-0); }
+.ag-delta--f { color: var(--ink-2); }
+.ag-trail {
+  margin: 16rpx 0 2rpx;
+  opacity: 0.9;
+}
+.ag-asset-where {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* 两条人生进度条（家 / 身体） */
+.ag-brow {
+  display: flex;
+  align-items: center;
+  margin-top: 16rpx;
+}
+.ag-brow-l {
+  width: 74rpx;
+  font-size: 24rpx;
+  color: var(--ink-1);
+}
+.ag-brow-track {
+  position: relative;
+  flex: 1;
+  height: 16rpx;
+  margin: 0 16rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+.ag-brow-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  transition: width var(--dur-count) var(--ease-out);
+}
+.ag-fill--bad { background-image: linear-gradient(90deg, var(--red-1), var(--red-0)); }
+.ag-fill--warn { background-image: linear-gradient(90deg, var(--warn-0), var(--gold-0)); }
+.ag-fill--ok { background-image: linear-gradient(90deg, var(--teal-1), var(--teal-0)); }
+.ag-thr--1 {
+  left: var(--bar-thr-1);
+}
+.ag-thr--2 {
+  left: var(--bar-thr-2);
+}
+.ag-thr {
+  position: absolute;
+  top: 0;
+  width: 1px;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.18);
+}
+.ag-brow-v {
+  width: 62rpx;
+  text-align: right;
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-1);
+}
+
+/* ---------- 目标条（对数刻度 0.5×–50×） ---------- */
+.ag-goal-wrap {
+  position: relative;
+  height: 46rpx;
+  margin: 22rpx 10rpx 6rpx;
+}
+.ag-goal-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 12rpx;
+  height: 22rpx;
+  border-radius: 999rpx;
+  background: rgba(255, 255, 255, 0.055);
+  border: 1px solid var(--line-0);
+  overflow: hidden;
+}
+/* 宽度由 GoalTrack 的数字补间逐帧写死（旧值 → 新值，easeOutCubic），
+   这里不能再挂 transition —— 两段动画叠在一起，进度条会比数字晚到半秒。 */
+.ag-goal-fill {
+  height: 100%;
+  border-radius: 999rpx;
+  background-image: linear-gradient(90deg, var(--teal-1) 0%, var(--gold-1) 78%, var(--gold-0) 100%);
+}
+.ag-goal-tick {
+  position: absolute;
+  top: 4rpx;
+  width: 1px;
+  height: 38rpx;
+  background: var(--line-1);
+}
+.ag-goal-tick--key {
+  background: rgba(246, 207, 114, 0.5);
+}
+.ag-goal-dot {
+  position: absolute;
+  top: 8rpx;
+  width: 30rpx;
+  height: 30rpx;
+  margin-left: -15rpx;
+  border-radius: 50%;
+  background: var(--gold-0);
+  border: 2px solid var(--bg-0);
+  box-shadow: var(--glow-gold);
+}
+.ag-goal-scale {
+  position: relative;
+  height: 26rpx;
+  margin: 0 10rpx;
+}
+.ag-goal-scale text {
+  position: absolute;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.ag-goal-scale text:first-child {
+  transform: none;
+}
+.ag-goal-scale text:last-child {
+  transform: translateX(-100%);
+}
+.ag-goal-line {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+.ag-goal-label {
+  font-size: 28rpx;
+  font-weight: 600;
+}
+.ag-goal-ratio {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+
+/* 贵贱标尺 */
+.ag-zone {
+  position: relative;
+  height: 40rpx;
+  margin-top: 22rpx;
+}
+.ag-zone-track {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 8rpx;
+  border-radius: 999rpx;
+  background-image: linear-gradient(90deg, var(--teal-1) 0%, rgba(255, 255, 255, 0.14) 50%, var(--gold-1) 100%);
+  opacity: 0.85;
+}
+.ag-zone-dot {
+  position: absolute;
+  bottom: 0;
+  width: 18rpx;
+  height: 26rpx;
+  margin-left: -9rpx;
+  border-radius: 4rpx 4rpx 0 0;
+  background: var(--ink-0);
+  box-shadow: 0 0 14rpx rgba(234, 241, 248, 0.35);
+  transition: left var(--dur-count) var(--ease-out);
+}
+.ag-zone-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10rpx;
+}
+.ag-zone-word {
+  font-size: 26rpx;
+  font-weight: 700;
+}
+
+/* ---------- 板块卡 ---------- */
+.ag-clue {
+  display: flex;
+  align-items: center;
+  padding: 16rpx 18rpx;
+  margin-bottom: 18rpx;
+  border-radius: var(--r-md);
+  border: 1px dashed var(--line-1);
+  background: rgba(246, 207, 114, 0.045);
+}
+.ag-clue-ico {
+  font-size: 24rpx;
+  color: var(--gold-0);
+  margin-right: 12rpx;
+}
+.ag-clue-t {
+  flex: 1;
+  font-size: 24rpx;
+  line-height: 1.55;
+  color: var(--ink-1);
+}
+/* 年代注脚：那一年最流行的一句话（迷雾模式不给） */
+.ag-quote {
+  margin: 0 0 18rpx;
+  padding: 8rpx 0 8rpx 16rpx;
+  border-left: 2rpx solid var(--line-1);
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-2);
+}
+.ag-sectors {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ag-sector {
+  position: relative;
+  width: 48.4%;
+  margin: 0 3.2% 16rpx 0;
+  padding: 20rpx 18rpx;
+  box-sizing: border-box;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-md);
+  background-color: rgba(255, 255, 255, 0.025);
+  transition: transform var(--dur-press) var(--ease-press), filter var(--dur-press) var(--ease-press),
+    border-color var(--dur-press) var(--ease-press);
+}
+.ag-sector:nth-child(2n) {
+  margin-right: 0;
+}
+.ag-sector:nth-child(5) {
+  width: 100%;
+  margin-right: 0;
+  margin-bottom: 0;
+}
+/* 第 5 张占满一整行，走势条却要和上面四张同宽：共享 y 域之后「坡度」才可比
+   （同宽度 + 同 y 尺，陡 = 强）。不这么做，全宽卡的线会被横向拉平，
+   +37.6% 的坡看起来反而比 +22.4% 平。 */
+.ag-sector:nth-child(5) .ag-sector-lg,
+.ag-sector:nth-child(5) .ag-sector-spark {
+  width: calc(50% - 20rpx);
+  margin-left: auto;
+}
+/* 按下态由 base.css 的统一规则给（缩放 + 提亮 + 描边），这里不再单独写一份。 */
+.ag-sector--on {
+  border-color: var(--line-2);
+  background-image: linear-gradient(160deg, rgba(246, 207, 114, 0.16) 0%, rgba(246, 207, 114, 0.03) 100%);
+  box-shadow: 0 10rpx 26rpx rgba(246, 207, 114, 0.14), inset 0 0 0 1px rgba(246, 207, 114, 0.22);
+}
+.ag-sector-book {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: var(--ink-0);
+  letter-spacing: 0.5rpx;
+}
+.ag-sector--on .ag-sector-book {
+  color: var(--gold-0);
+}
+.ag-sector-sub {
+  margin-top: 6rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+  line-height: 1.5;
+}
+.ag-sector-k {
+  margin-top: 12rpx;
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-1);
+  border: 1px solid var(--line-1);
+  border-radius: 6rpx;
+  padding: 2rpx 10rpx;
+}
+.ag-sector-mark {
+  position: absolute;
+  right: 12rpx;
+  top: 12rpx;
+  font-size: 24rpx;
+  font-weight: 700;
+  color: var(--bg-0);
+  background: var(--gold-0);
+  border-radius: 6rpx;
+  padding: 0 8rpx;
+  line-height: 30rpx;
+}
+
+/* ---------- 仓位 ---------- */
+.ag-seg {
+  display: flex;
+  padding: 6rpx;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-md);
+  background: rgba(0, 0, 0, 0.34);
+}
+.ag-seg-i {
+  flex: 1;
+  text-align: center;
+  padding: 18rpx 0;
+  border-radius: 10rpx;
+  font-size: 26rpx;
+  color: var(--ink-1);
+  transition: background var(--dur-press) var(--ease-press), color var(--dur-press) var(--ease-press);
+}
+.ag-seg-i--on {
+  background-image: linear-gradient(180deg, var(--gold-0), var(--gold-1));
+  color: var(--ink-inverse);
+  font-weight: 800;
+  box-shadow: 0 6rpx 18rpx rgba(216, 164, 65, 0.26);
+}
+.ag-hintline {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 16rpx;
+  padding-left: 14rpx;
+  border-left: 4rpx solid var(--line-2);
+}
+.ag-hintline-t {
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-1);
+}
+
+/* 杠杆 / 止损：开合用「滑钮位置 + 文字 + 边框样式」三重区分，不只靠颜色 */
+.ag-flags {
+  display: flex;
+  margin-top: 18rpx;
+}
+.ag-flag {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14rpx 16rpx;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ag-flag:first-child {
+  margin-right: 14rpx;
+}
+.ag-flag--on {
+  border-color: var(--line-2);
+  border-style: solid;
+  background: rgba(246, 207, 114, 0.08);
+}
+.ag-flag--off {
+  border-style: dashed;
+}
+.ag-flag-t {
+  display: flex;
+  flex-direction: column;
+}
+.ag-flag-name {
+  font-size: 24rpx;
+  color: var(--ink-0);
+  font-weight: 600;
+}
+.ag-flag-v {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-top: 2rpx;
+}
+.ag-sw {
+  position: relative;
+  width: 76rpx;
+  height: 40rpx;
+  border-radius: 999rpx;
+  background: rgba(0, 0, 0, 0.5);
+  border: 1px solid var(--line-1);
+}
+.ag-sw-knob {
+  position: absolute;
+  top: 4rpx;
+  left: 4rpx;
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 50%;
+  background: var(--ink-2);
+  transition: left var(--dur-press) var(--ease-press), background var(--dur-press) var(--ease-press);
+}
+.ag-flag--on .ag-sw {
+  background: rgba(246, 207, 114, 0.28);
+  border-color: var(--gold-1);
+}
+.ag-flag--on .ag-sw-knob {
+  left: 40rpx;
+  background: var(--gold-0);
+}
+.ag-sw-txt {
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-top: 6rpx;
+  text-align: right;
+  font-family: var(--font-mono);
+}
+.ag-flag--on .ag-sw-txt {
+  color: var(--gold-0);
+}
+
+/* ---------- 行动 ---------- */
+.ag-ap {
+  display: flex;
+  align-items: center;
+}
+.ag-ap-cell {
+  width: 30rpx;
+  height: 30rpx;
+  border-radius: 6rpx;
+  margin-left: 8rpx;
+  border: 1px dashed var(--line-1);
+  background: rgba(255, 255, 255, 0.02);
+}
+.ag-ap-cell--on {
+  border: 1px solid var(--gold-0);
+  background-image: linear-gradient(180deg, var(--gold-0), var(--gold-1));
+  box-shadow: 0 0 12rpx rgba(246, 207, 114, 0.3);
+}
+.ag-doors {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 18rpx;
+}
+.ag-door {
+  width: 48.4%;
+  margin: 0 3.2% 14rpx 0;
+  padding: 18rpx;
+  box-sizing: border-box;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-md);
+  background-color: rgba(255, 255, 255, 0.03);
+}
+.ag-door:nth-child(2n) {
+  margin-right: 0;
+}
+/* 按下态的缩放/提亮/描边见 base.css；这里只补一层底色，让"按下"在窄格子里也有分量。 */
+.ag-door:active {
+  background-color: rgba(255, 255, 255, 0.07);
+}
+.ag-door-t {
+  font-size: 28rpx;
+  font-weight: 700;
+  color: var(--ink-0);
+}
+.ag-door-d {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.ag-door--wide {
+  width: 100%;
+  margin-right: 0;
+  margin-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-style: dashed;
+}
+.ag-door--off {
+  opacity: 0.42;
+}
+.ag-door-tag {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--gold-0);
+  border: 1px solid var(--line-2);
+  border-radius: 6rpx;
+  padding: 2rpx 10rpx;
+}
+
+/* ---------- 消息卡 ---------- */
+.ag-intel-row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding: 18rpx 18rpx 18rpx 22rpx;
+  margin-bottom: 12rpx;
+  border-radius: var(--r-md);
+  background-color: rgba(255, 255, 255, 0.03);
+  border-left: 5rpx solid var(--line-1);
+}
+.ag-intel-row--t {
+  border-left-style: solid;
+  border-left-color: var(--gold-0);
+  background-color: rgba(246, 207, 114, 0.08);
+}
+.ag-intel-row--f {
+  border-left-style: dashed;
+  border-left-color: var(--red-0);
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255, 106, 106, 0.09) 0,
+    rgba(255, 106, 106, 0.09) 6rpx,
+    rgba(0, 0, 0, 0) 6rpx,
+    rgba(0, 0, 0, 0) 14rpx
+  );
+  background-color: rgba(0, 0, 0, 0.2);
+}
+.ag-intel-row--n {
+  border-left-style: dotted;
+}
+.ag-intel-glyph {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  width: 30rpx;
+  color: var(--ink-2);
+}
+.ag-intel-row--t .ag-intel-glyph { color: var(--gold-0); }
+.ag-intel-row--f .ag-intel-glyph { color: var(--red-0); }
+.ag-intel-body {
+  flex: 1;
+}
+.ag-intel-name {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-right: 10rpx;
+}
+.ag-intel-text {
+  font-size: 25rpx;
+  line-height: 1.6;
+  color: var(--ink-0);
+}
+.ag-intel-tag {
+  font-size: 24rpx;
+  font-family: var(--font-mono);
+  border: 1px solid var(--line-1);
+  border-radius: 6rpx;
+  padding: 0 8rpx;
+  color: var(--ink-2);
+  margin-left: 8rpx;
+}
+.ag-intel-tag--t { color: var(--gold-0); border-color: var(--line-2); }
+.ag-intel-tag--f { color: var(--red-0); border-color: rgba(255, 106, 106, 0.4); }
+.ag-intel-hint {
+  font-size: 24rpx;
+  line-height: 1.62;
+  color: var(--ink-1);
+  margin-top: 6rpx;
+}
+
+/* ---------- 日志流 ---------- */
+.ag-log-year {
+  display: flex;
+  align-items: center;
+  margin: 14rpx 0 10rpx;
+}
+.ag-log-year-t {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+  letter-spacing: 2rpx;
+  margin-right: 12rpx;
+}
+.ag-log-year-l {
+  flex: 1;
+  height: 1px;
+  background: var(--line-0);
+}
+.ag-log-i {
+  padding: 8rpx 0 8rpx 14rpx;
+  border-left: 3rpx solid var(--line-0);
+  font-size: 25rpx;
+  line-height: 1.62;
+  margin-bottom: 8rpx;
+}
+.ag-l--up { color: var(--red-0); border-left-color: rgba(255, 106, 106, 0.55); }
+.ag-l--down { color: var(--teal-0); border-left-color: rgba(62, 224, 203, 0.55); }
+.ag-l--gold { color: var(--gold-0); border-left-color: rgba(246, 207, 114, 0.55); }
+.ag-l--note { color: var(--ink-1); }
+.ag-l--head { color: var(--ink-0); font-weight: 700; border-left-color: var(--line-1); }
+.ag-l--plain { color: var(--ink-2); }
+.ag-log-empty {
+  font-size: 24rpx;
+  color: var(--ink-2);
+  padding: 24rpx 0;
+  text-align: center;
+}
+
+/* ---------- 图表槽位（charts 组件未就位时的占位，props 与契约一致） ---------- */
+.ag-chart-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--line-1);
+  border-radius: var(--r-md);
+  background: repeating-linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.03) 0,
+    rgba(255, 255, 255, 0.03) 1px,
+    rgba(0, 0, 0, 0) 1px,
+    rgba(0, 0, 0, 0) 12.5%
+  );
+  font-size: 24rpx;
+  color: var(--ink-2);
+  letter-spacing: 2rpx;
+}
+
+/* ---------- 底部主行动 dock ---------- */
+/* ★ dock 的尺寸只在这里定义一次，内容区的让位也跟着它走（.ag-shell 的 padding-bottom）。
+   推导：--dock-h = 上内边距 + 按钮行 + 次行间距 + 次行高 + 下内边距；
+   次行高再由「字号 × 行高 + 上下内边距 + 上下边框」推出，所以改字号/行高也会自动跟着变。
+   想要「内容离 dock 再远一点」就只调 --dock-gap —— 它是唯一另一个数，且只作用于留白。 */
+page {
+  --dock-pad-t: 16rpx;
+  --dock-pad-b: 28rpx;
+  --dock-btn-h: 96rpx;
+  --dock-sub-gap: 10rpx;
+  --dock-mini-fs: 24rpx;
+  --dock-mini-lh: 34rpx;
+  --dock-mini-py: 6rpx;
+  --dock-sub-h: calc(var(--dock-mini-lh) + var(--dock-mini-py) * 2 + 2rpx);
+  --dock-h: calc(
+    var(--dock-pad-t) + var(--dock-btn-h) + var(--dock-sub-gap) + var(--dock-sub-h) + var(--dock-pad-b)
+  );
+  --dock-gap: 48rpx;
+}
+.ag-dock {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-dock);
+  padding: var(--dock-pad-t) 24rpx var(--dock-pad-b);
+  background-image: linear-gradient(180deg, rgba(6, 9, 13, 0.72) 0%, rgba(6, 9, 13, 0.96) 34%, var(--bg-0) 100%);
+}
+.ag-dock-in {
+  max-width: 680px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+}
+.ag-dock .ag-btn {
+  height: var(--dock-btn-h);
+}
+.ag-dock-main {
+  flex: 1.9;
+  margin-right: 14rpx;
+}
+.ag-dock-year {
+  flex: 1;
+}
+/* 内容区给 dock 让位的唯一来源：和 dock 高度共用 --dock-h，两者不会再各写一个魔数。 */
+.ag-shell {
+  padding-bottom: calc(var(--dock-h) + var(--dock-gap));
+}
+
+/* ---------- 弹层 ---------- */
+.ag-mask {
+  position: fixed;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: var(--z-mask);
+  background: rgba(3, 6, 10, 0.82);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.ag-sheet {
+  width: 100%;
+  max-width: 680px;
+  border: 1px solid var(--line-1);
+  border-radius: 26rpx 26rpx 0 0;
+  background-color: var(--bg-2);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.05) 0%, rgba(255, 255, 255, 0) 40%);
+  box-shadow: var(--shadow-2);
+  overflow: hidden;
+}
+
+/* 过场（事件 / 结局 / 海报 / 续玩 / 行动子项）：遮罩压暗与面板位移同一个时长同时开始，
+   面板从下方 18px 处浮上来，180ms；出场 140ms 反向。
+   出场必须由页面先加 .ag-leave、play 完再撤 v-if —— 元素先消失的话动画没有机会跑
+   （那正是"只有入场没有出场"的由来）。页面侧见 pages/index/index.vue 的 withLeave()。 */
+.ag-mask {
+  animation: ag-mask-in var(--dur-modal-in) var(--ease-out) both;
+}
+.ag-mask > .ag-sheet {
+  animation: ag-sheet-in var(--dur-modal-in) var(--ease-out) both;
+}
+.ag-mask.ag-leave {
+  animation: ag-mask-out var(--dur-modal-out) var(--ease-out) both;
+}
+.ag-mask.ag-leave > .ag-sheet {
+  animation: ag-sheet-out var(--dur-modal-out) var(--ease-out) both;
+}
+@keyframes ag-mask-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes ag-mask-out {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+@keyframes ag-sheet-in {
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ag-sheet-out {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(12px); }
+}
+.ag-sheet-hd {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 26rpx 26rpx 0;
+}
+.ag-sheet-body {
+  padding: 10rpx 26rpx 34rpx;
+}
+.ag-modal-scroll {
+  padding: 10rpx 26rpx 34rpx;
+  box-sizing: border-box;
+}
+.ag-opt {
+  display: flex;
+  align-items: flex-start;
+  padding: 20rpx 18rpx;
+  margin-top: 14rpx;
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-md);
+  background: rgba(255, 255, 255, 0.03);
+}
+.ag-opt:active {
+  background: rgba(246, 207, 114, 0.1);
+  border-color: var(--line-2);
+}
+.ag-opt-idx {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--gold-0);
+  width: 34rpx;
+  padding-top: 4rpx;
+}
+.ag-opt-t {
+  font-size: 27rpx;
+  font-weight: 700;
+  color: var(--ink-0);
+}
+.ag-opt-d {
+  margin-top: 4rpx;
+  font-size: 24rpx;
+  line-height: 1.6;
+  color: var(--ink-1);
+}
+.ag-lock {
+  color: var(--red-0);
+}
+
+/* ---------- 出身 / 模式 ---------- */
+.ag-pick {
+  position: relative;
+  padding: 24rpx;
+  margin-bottom: 18rpx;
+  border: 1px solid var(--line-0);
+  border-radius: var(--r-lg);
+  background-image: linear-gradient(180deg, rgba(255, 255, 255, 0.04) 0%, rgba(255, 255, 255, 0.01) 100%);
+  background-color: var(--bg-1);
+  box-shadow: var(--shadow-1);
+}
+.ag-pick:active {
+  border-color: var(--line-2);
+  background-color: var(--bg-2);
+}
+.ag-pick-t {
+  font-size: 34rpx;
+  font-weight: 800;
+  color: var(--ink-0);
+}
+.ag-pick-d {
+  margin-top: 8rpx;
+  font-size: 24rpx;
+  line-height: 1.65;
+  color: var(--ink-1);
+}
+.ag-pick-meta {
+  display: flex;
+  flex-wrap: wrap;
+  margin-top: 16rpx;
+  padding-top: 14rpx;
+  border-top: 1px dashed var(--line-0);
+}
+.ag-pick-meta text {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+  margin-right: 18rpx;
+}
+.ag-stamp {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--line-2);
+  color: var(--gold-0);
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  letter-spacing: 3rpx;
+  padding: 4rpx 12rpx;
+  border-radius: 4rpx;
+}
+
+/* ---------- 结局卡 ---------- */
+.ag-end-hero {
+  padding: 34rpx 24rpx 30rpx;
+  text-align: center;
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-lg);
+  background-image:
+    radial-gradient(120% 90% at 50% 0%, rgba(246, 207, 114, 0.16), rgba(246, 207, 114, 0) 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(255, 255, 255, 0));
+  background-color: var(--bg-1);
+  box-shadow: 0 20rpx 60rpx rgba(0, 0, 0, 0.5);
+  margin-bottom: 20rpx;
+}
+.ag-end-kick {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  letter-spacing: 6rpx;
+  color: var(--ink-2);
+}
+.ag-end-title {
+  font-size: 60rpx;
+  font-weight: 900;
+  letter-spacing: 4rpx;
+  color: var(--gold-0);
+  margin: 12rpx 0 6rpx;
+  text-shadow: 0 0 40rpx rgba(246, 207, 114, 0.25);
+}
+.ag-end-note {
+  font-size: 25rpx;
+  line-height: 1.7;
+  color: var(--ink-1);
+  margin: 0 auto;
+  max-width: 560rpx;
+}
+.ag-end-num {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 68rpx;
+  font-weight: 700;
+  color: var(--ink-0);
+  margin: 22rpx 0 6rpx;
+}
+.ag-ledger {
+  display: flex;
+  flex-wrap: wrap;
+}
+.ag-ledger-i {
+  width: 50%;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 12rpx 0;
+  box-sizing: border-box;
+  border-bottom: 1px dashed var(--line-0);
+}
+.ag-ledger-i:nth-child(2n) {
+  padding-left: 18rpx;
+}
+.ag-ledger-i:nth-child(odd) {
+  padding-right: 18rpx;
+}
+.ag-ledger-l {
+  font-size: 24rpx;
+  color: var(--ink-2);
+}
+.ag-ledger-v {
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-0);
+}
+.ag-profile-i {
+  padding-left: 16rpx;
+  border-left: 3rpx solid var(--line-2);
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-1);
+  margin-bottom: 12rpx;
+}
+.ag-egg {
+  font-size: 24rpx;
+  line-height: 1.8;
+  color: var(--ink-2);
+  font-style: italic;
+  padding: 18rpx;
+  border: 1px dashed var(--line-1);
+  border-radius: var(--r-md);
+  margin-top: 8rpx;
+}
+
+/* ---------- 已存档轻提示 / dock 次行 ---------- */
+.ag-topbar {
+  position: relative;
+}
+.ag-saved {
+  position: absolute;
+  left: 50%;
+  top: 8rpx;
+  transform: translateX(-50%);
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  letter-spacing: 2rpx;
+  color: var(--ink-2);
+  border: 1px solid var(--line-0);
+  border-radius: 999rpx;
+  padding: 2rpx 14rpx;
+  animation: ag-saved var(--dur-toast) ease both;
+}
+@keyframes ag-saved {
+  0% { opacity: 0; transform: translate(-50%, -6rpx); }
+  18% { opacity: 1; transform: translate(-50%, 0); }
+  72% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.ag-dock-sub {
+  max-width: 680px;
+  margin: var(--dock-sub-gap) auto 0;
+  display: flex;
+  align-items: center;
+  /* 次行必须是一行：换行会让 dock 比 --dock-h 高，行尾就被裁在自己的盒子里。 */
+  flex-wrap: nowrap;
+  height: var(--dock-sub-h);
+}
+.ag-mini {
+  font-size: var(--dock-mini-fs);
+  line-height: var(--dock-mini-lh);
+  color: var(--ink-1);
+  border: 1px dashed var(--line-1);
+  border-radius: 999rpx;
+  padding: var(--dock-mini-py) 16rpx;
+  margin-right: 12rpx;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.ag-mini:active {
+  background: rgba(255, 255, 255, 0.07);
+}
+.ag-mini--on {
+  color: var(--gold-0);
+  border-style: solid;
+  border-color: var(--line-2);
+  background: rgba(246, 207, 114, 0.1);
+}
+.ag-mini--off {
+  opacity: 0.45;
+}
+.ag-mini--hint {
+  margin-left: auto;
+  margin-right: 0;
+  border: none;
+  padding: var(--dock-mini-py) 0;
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  /* 挤了就省略号，绝不换行 —— 换行会让这一行高出 --dock-sub-h 被裁。 */
+  flex: 1 1 auto;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---------- 结局仪式 / 年代缎带 / 海报弹层 ---------- */
+.ag-era-ribbon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: 18rpx;
+}
+.ag-era-ribbon .ag-era-chip {
+  margin: 0 6rpx;
+  opacity: 0.85;
+}
+.ag-end-actions {
+  display: flex;
+  margin-top: 20rpx;
+}
+.ag-end-actions .ag-btn {
+  flex: 1;
+}
+.ag-end-actions .ag-btn:first-child {
+  flex: 1.4;
+  margin-right: 14rpx;
+}
+.ag-skip {
+  margin: 18rpx auto 0;
+  width: 200rpx;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 24rpx;
+  color: var(--ink-2);
+  border: 1px dashed var(--line-1);
+  border-radius: 999rpx;
+  padding: 10rpx 0;
+}
+.ag-poster-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10rpx 0 4rpx;
+}
+.ag-poster-cv {
+  border-radius: var(--r-md);
+  border: 1px solid var(--line-1);
+  background: var(--bg-1);
+}
+.ag-poster-tip {
+  font-size: 24rpx;
+  line-height: 1.7;
+  color: var(--ink-1);
+  margin-top: 14rpx;
+  text-align: center;
+}
+
+/* ---------- 桌面端（小程序端不解析媒体查询，默认即手机版式） ---------- */
+@media (min-width: 1024px) {
+  /* 桌面端只改 dock 的下内边距与留白，高度仍从 --dock-h 推出来。 */
+  page {
+    --dock-pad-b: 34rpx;
+    --dock-gap: 56rpx;
+  }
+  .ag-shell {
+    max-width: 700px;
+    padding: 40rpx 0 calc(var(--dock-h) + var(--dock-gap));
+  }
+  .ag-panel {
+    padding: 32rpx 30rpx;
+    margin-bottom: 24rpx;
+  }
+  .ag-bg {
+    background-image:
+      radial-gradient(60% 40% at 50% -6%, rgba(246, 207, 114, 0.16), rgba(246, 207, 114, 0) 60%),
+      radial-gradient(46% 34% at 12% 28%, rgba(62, 224, 203, 0.06), rgba(62, 224, 203, 0) 70%),
+      radial-gradient(46% 34% at 88% 72%, rgba(246, 207, 114, 0.05), rgba(246, 207, 114, 0) 70%),
+      repeating-linear-gradient(0deg, rgba(255, 255, 255, 0.03) 0, rgba(255, 255, 255, 0.03) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 48rpx),
+      repeating-linear-gradient(90deg, rgba(255, 255, 255, 0.03) 0, rgba(255, 255, 255, 0.03) 1px, rgba(0, 0, 0, 0) 1px, rgba(0, 0, 0, 0) 48rpx);
+  }
+  .ag-mask {
+    align-items: center;
+  }
+  .ag-sheet {
+    border-radius: 26rpx;
+  }
+}

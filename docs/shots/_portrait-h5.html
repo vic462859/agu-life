@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>portrait-h5</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #05070a; }
+  body { display: flex; align-items: flex-start; justify-content: center; padding: 16px 0; box-sizing: border-box; }
+  .phone { width: 375px; height: 812px; border-radius: 14px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.08), 0 18px 50px rgba(0,0,0,.6); background: #06090d; }
+  iframe { border: 0; display: block; width: 375px; height: 812px; }
+  #out { position: absolute; left: -99999px; }
+</style>
+</head>
+<body>
+<div class="phone"><iframe id="f" src="/index.html"></iframe></div>
+<pre id="out"></pre>
+<script>
+/* 只用于截图：?s=trade|end[&patch=rich|crash|old|normal] —— 自动玩到目标画面 */
+(function () {
+  var params = new URLSearchParams(location.search)
+  var target = params.get('s') || 'trade'
+  var patch = params.get('patch') || ''
+  var KEY = 'agu_life_save_v1'
+  var ifr = document.getElementById('f')
+  try { localStorage.clear() } catch (e) {}
+  function doc() { try { return ifr.contentDocument } catch (e) { return null } }
+  function q(sel) { var d = doc(); return d ? d.querySelector(sel) : null }
+  function click(sel) { var el = q(sel); if (!el) return false; el.click(); return true }
+  function wait(ms) { return new Promise(function (r) { setTimeout(r, ms) }) }
+  async function until(sel, max) { for (var i = 0; i < (max || 160); i++) { if (q(sel)) return true; await wait(60) } return false }
+  function report(s) { document.title = 'S=' + s }
+  /* 把这一局的读数改成目标形态：只动 s 上的字段，map/phase 不动（长图形状仍是这一局真实的） */
+  function patchSave(kind) {
+    var raw = localStorage.getItem(KEY)
+    if (!raw) return false
+    var env = JSON.parse(raw)
+    var s = env.s
+    var start = s.start || 30000
+    if (kind === 'rich') { s.asset = start * 30; s.health = 74; s.fam = 66; s.flag = 0; s.busted = false }
+    if (kind === 'crash') { s.asset = Math.round(start * 0.3); s.busted = true; s.health = 18 }
+    if (kind === 'old') { s.asset = start * 3.2; s.health = 42; s.fam = 58; s.flag = 10; s.busted = false }
+    if (kind === 'normal') { s.asset = start * 2.2; s.health = 72; s.fam = 62; s.flag = 0; s.busted = false }
+    env.phase = 'end'
+    localStorage.setItem(KEY, JSON.stringify(env))
+    return true
+  }
+  async function playToEnd() {
+    for (var j = 0; j < 8000; j++) {
+      if (q('#opt-0')) { click('#opt-0'); await wait(12); continue }
+      if (q('#end-card')) break
+      if (q('#go-late')) { click('#go-late'); await wait(12); continue }
+      if (q('#go-year')) { click('#go-year'); await wait(12); continue }
+      await wait(40)
+    }
+  }
+  async function main() {
+    await until('#org-0', 200)
+    if (q('#resume-new')) { click('#resume-new'); await wait(150) }
+    click('#org-0'); await wait(200)
+    click('#mode-real'); await wait(300)
+    if (target === 'trade') {
+      for (var i = 0; i < 12; i++) {
+        if (q('#opt-0')) { click('#opt-0'); await wait(140); continue }
+        click('#go-quarter'); await wait(150)
+      }
+      for (var m = 0; m < 4 && q('#opt-0'); m++) { click('#opt-0'); await wait(160) }
+      await wait(700)
+      report('trade'); return
+    }
+    await playToEnd()
+    if (patch) {
+      patchSave(patch)
+      ifr.src = '/index.html?r=' + Date.now()
+      await wait(600)
+      await until('#resume', 200)
+      click('#resume')
+      await wait(3200)
+    }
+    await wait(2600)
+    report('end-' + (patch || 'plain'))
+  }
+  main()
+})()
+</script>
+</body>
+</html>

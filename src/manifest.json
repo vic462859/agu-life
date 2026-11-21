@@ -1,0 +1,24 @@
+{
+  "name": "A股人生",
+  "appid": "",
+  "description": "A股人生 · 36 年 A 股模拟人生（模拟游戏，不构成投资建议）",
+  "versionName": "0.1.0",
+  "versionCode": "100",
+  "transformPx": false,
+  "h5": {
+    "title": "A股人生",
+    "router": {
+      "mode": "hash"
+    }
+  },
+  "mp-weixin": {
+    "appid": "",
+    "setting": {
+      "urlCheck": false,
+      "es6": true,
+      "minified": true
+    },
+    "usingComponents": true
+  },
+  "vueVersion": "3"
+}
